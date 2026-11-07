@@ -52,8 +52,11 @@ more the harness decides the result. Details: `references/harnesses.md`.
    call, prefix-cache reuse across two turns (`cache_n`), prefill and
    generation tok/s, and the Anthropic `/v1/messages` endpoint. Fix every FAIL
    here; a harness only blurs them.
-4. **Pick the harness** for the model size and window (`references/harnesses.md`).
-   Light first (Pi, mini-swe-agent, Qwen Code), heavy last (Claude Code).
+4. **Pick the harness** for the model size and window (`references/harnesses.md`)
+   and configure it from `references/harness-configs.md`. Light first (Pi,
+   mini-swe-agent, Qwen Code), heavy last (Claude Code). **Always declare the
+   real context window and output cap**: harnesses assume 128K–200K for unknown
+   models and compact too late.
 5. **Evaluate on the user's own small task set in ≥ 2 harnesses.** Harness
    rankings do not transfer between models. Keep the output-token cap and
    context identical across runs. Measure with `llama-bench` and the probe,
@@ -93,7 +96,8 @@ more the harness decides the result. Details: `references/harnesses.md`.
 
 - `references/server.md`: llama-server recipes, flag meanings, MoE offload tuning, MTP, router mode, prompt cache.
 - `references/models.md`: model and quant choice by VRAM/RAM, with evidence.
-- `references/harnesses.md`: harness evidence, ranking, configs (Pi, OpenCode, Qwen Code, mini-swe-agent, Claude Code), context-management rules.
+- `references/harnesses.md`: harness evidence, ranking, context-management rules, Claude Code setup.
+- `references/harness-configs.md`: copy-paste configs for Pi, Qwen Code, mini-swe-agent, OpenCode at 32K (context, compaction, output caps, permissions).
 - `references/troubleshooting.md`: symptom → cause → fix.
 - `scripts/llm_probe.py`: stdlib-only endpoint probe (run with `python3 -I`).
 - Sources are cited where they are used in each reference file. Numbers are

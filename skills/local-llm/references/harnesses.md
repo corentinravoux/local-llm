@@ -53,12 +53,15 @@
 
 ## Ranking for small local setups
 
+Exact configs: `harness-configs.md`.
+
+
 | Harness | Use when | Config notes |
 |---|---|---|
-| **Pi** (`npm i -g @earendil-works/pi-coding-agent`, Node ≥ 22.19; formerly badlogic/pi-mono) | default for any local model | Built-in llama.cpp provider: `LLAMA_BASE_URL=http://127.0.0.1:9931 pi`, then `/model`. Generic: `~/.pi/agent/models.json` provider with `"api": "openai-completions"`, `baseUrl …/v1`, dummy `apiKey`. Compaction in `settings.json`: `compaction.reserveTokens` (default 16384) and `keepRecentTokens` (20000) are too big for 32K; try 4096 / 8192. **No permission system**: run in a container or a scratch checkout. Extensions are TypeScript. `SYSTEM.md` / `APPEND_SYSTEM.md` override the prompt |
-| **Qwen Code** (`qwen`) | Qwen models | `qwen --openai-base-url http://127.0.0.1:9931/v1`; native Qwen tool format |
+| **Pi** (`@earendil-works/pi-coding-agent`, Node ≥ 22.19) | default for any local model | 4 default tools; set `contextWindow`/`maxTokens` in models.json (defaults 128000/16384); compaction defaults (16384/20000) wrong at 32K; built-in llama.cpp provider needs router mode, single-model via models.json; `context` extension hook can implement tool-result shortening; no permission system → container |
+| **Qwen Code** (`qwen`) | Qwen models | `OPENAI_BASE_URL/OPENAI_API_KEY/OPENAI_MODEL` or `modelProviders` in `~/.qwen/settings.json` with `contextWindowSize`; `autoCompactThreshold` 0.75; docker/podman sandbox |
 | **mini-swe-agent** | ≤ 9B models, research, reproducible evals | bash only, linear history, Python; the SWE-bench reference harness; easy to add Lewis-style truncation |
-| **OpenCode** | Gemma 4; when a TUI with LSP is wanted | `opencode.json`: provider `"package": "@opencode/ai/providers/openai-compatible"`, `settings.baseURL …/v1`, per model `capabilities.tools: true`, **`limit.context` / `limit.output` set explicitly** (it otherwise assumes 200K / 32K), `compatibility.reasoningField: "reasoning_content"`, `settings.headerTimeout` raised for slow prefill. It reads test files and graders if they are visible |
+| **OpenCode** (V2 config, repo now anomalyco/opencode) | Gemma 4; when a TUI with LSP is wanted | set `limit.context/output`, `compaction` (buffer ≥ 16K!), `tool_output` (defaults 2000 lines / 50 KiB), deny test paths in `permissions`; custom agent with short `system` for small models; reads graders if visible |
 | **Claude Code** | learning, comparing, the user's habits | see below; heaviest scaffolding |
 | **Hermes Agent** | to watch | desktop one-click local setup manages its own llama.cpp; reports of corrupted output with Qwen GGUFs; docs want ≥ 64K context |
 | **Aider** | chat-style editing, not agents | prose edit blocks, not tool calls; slowest |
