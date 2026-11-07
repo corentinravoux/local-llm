@@ -23,12 +23,33 @@ Qwen3.6-35B-A3B from 43 to 72 SWE-bench solutions at a 20K window, and the gain
 vanished at 262K (arXiv 2608.26218). The smaller the model and the window, the
 more the harness decides the result. Details: `references/harnesses.md`.
 
+## Local layer (read first)
+
+The skill is general. What is specific to the user and their machines lives in
+a local layer, looked up in this order (all that exist apply, nearest wins):
+`.local-llm/` in the working directory or a parent, then `$LOCAL_LLM_HOME`, then
+`~/.local-llm/`. Before answering, read:
+
+- `profile.md`: goals, preferences, constraints on every machine;
+- `machines/$(hostname -s).md`: this machine's hardware, paths, build, quirks,
+  chosen models and **measured numbers**;
+- `notes.md`: notes attached to a section of this skill, under
+  `## <reference file>#<heading slug>` (`## general` for the whole skill).
+
+A layer entry overrides the skill's generic default; say when an answer relies
+on it. **Write user- or machine-specific findings into the layer, never into
+the skill:** new hardware facts, chosen configs, and every measurement (date,
+build, model+quant, exact command, numbers). Propose a change to the skill
+itself only for findings that hold for everyone. If no layer exists and the
+user wants one, create `~/.local-llm/` with those three files (see the repo's
+`layer-template/`).
+
 ## Before recommending anything
 
-1. **Read the machine, don't assume it:** `nvidia-smi`, `free -g`, the RAM speed
+1. **Read the machine, don't assume it:** start from the layer's machine file,
+   then check what may have changed: `nvidia-smi`, `free -g`, the RAM speed
    (`sudo dmidecode -t memory`, which the user runs), the llama.cpp build
-   (`git -C <llama.cpp> describe --tags`). Project memory may already hold a
-   machine profile; check it.
+   (`git -C <llama.cpp> describe --tags`). Update the machine file when a fact changed.
 2. **Verify flags against the installed binary**, not against memory or blogs:
    `llama-server --help | grep -A1 -- '<flag>'`. llama.cpp changes defaults
    often. Since ~b11521 the default port is **9931** (was 8080), `--jinja` is
@@ -66,8 +87,8 @@ more the harness decides the result. Details: `references/harnesses.md`.
 
 - **Never `--host 0.0.0.0`** without `--api-key` and the user's explicit request.
 - **Never route the user's main Claude Code config to a local model.** Use a
-  separate `CLAUDE_CONFIG_DIR` (e.g. `~/.claude-local`). A shared
-  `settings.json` behind symlinks reroutes every account.
+  separate `CLAUDE_CONFIG_DIR` (e.g. `~/.claude-local`). A main config may be
+  shared (synced or symlinked) with other machines and accounts.
 - **KV cache q8_0 at most, never q4_0** for tool use (official llama.cpp
   warning). **No Q3/IQ3 or lower weights** for agents: they produce malformed
   calls.

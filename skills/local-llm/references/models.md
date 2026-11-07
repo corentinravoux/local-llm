@@ -75,7 +75,7 @@ WIP). They indicate rank, not absolute quality.
   (tools + json_schema loop in reasoning, open) and malformed channel headers in
   ~4% of turns at temp 1.0 (#27720) are reported. Lower the temperature for agents.
 
-## Profile: 12 GB VRAM + 16 GB DDR4 (e.g. RTX 3060)
+## Example profile: 12 GB VRAM + 16 GB RAM
 
 1. Plumbing: Qwen3.5-9B Q4_K_M or gpt-oss-20b, fully on GPU, 32K+ context.
 2. Main agent: **Qwen3.6-35B-A3B UD-IQ4_XS**, `-c 32768`, KV q8_0,
